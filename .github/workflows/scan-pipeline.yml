@@ -1,0 +1,19 @@
+name: Security Scan Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Hello World
+        run: echo "Hello from GitHub Actions!"
+
+# ниче не понял
