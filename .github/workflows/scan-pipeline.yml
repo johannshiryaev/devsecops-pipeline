@@ -2,18 +2,84 @@ name: Security Scan Pipeline
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches-ignore:
+      - l10n_develop
+      - gh-pages
+    tags-ignore:
+      - '*'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_ORG: your_organization_key
+  PROJECT_KEY: juice-shop-devsecops
 
 jobs:
-  scan:
+  security-check:
     runs-on: ubuntu-latest
+    services:
+      juice-shop:
+        image: bkimminich/juice-shop
+        ports:
+          - "3000:3000"
+        options: >-
+          --health-cmd="curl -f http://localhost:3000"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
 
-      - name: Hello World
-        run: echo "Hello from GitHub Actions!"
+      - name: "Install app dependencies"
+        run: |
+          cd app
+          npm install --production
 
-# ниче не понял
+      - name: "Run Gitleaks scan"
+        run: |
+          docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --verbose
+
+      - name: "Build SBOM with Syft"
+        run: |
+          docker run --rm -v $(pwd):/app anchore/syft dir:/app -o cyclonedx-json=/app/reports/sbom.json
+
+      - name: "Scan SBOM with Trivy"
+        run: |
+          docker run --rm -v $(pwd):/app aquasecurity/trivy sbom /app/reports/sbom.json > /app/reports/trivy-sbom.txt
+
+      - name: "Run OWASP Dependency-Check"
+        run: |
+          docker run --rm -v $(pwd)/app:/project owasp/dependency-check \
+            --project juice-shop \
+            --scan /project/node_modules \
+            --format XML \
+            --out /project/reports/
+
+      - name: "Static analysis with SonarQube"
+        run: |
+          docker run --rm -v $(pwd)/app:/src sonarsource/sonar-scanner-cli \
+            -Dsonar.organization=${{ env.SONAR_ORG }} \
+            -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
+            -Dsonar.sources=/src \
+            -Dsonar.host.url=https://sonarcloud.io  \
+            -Dsonar.login=$SONAR_TOKEN
+
+      - name: "Dynamic analysis with OWASP ZAP"
+        run: |
+          docker run --rm -v $(pwd)/reports:/zap/reports owasp/zap2docker-stable zap-baseline.py -t http://juice-shop:3000 -r zap-report.html
+
+      - name: "Sign package.json with Cosign"
+        run: |
+          docker run --rm -v $(pwd)/reports:/out ghcr.io/sigstore/cosign generate-key-pair -y -o /out/cosign.key
+          docker run --rm -v $(pwd):/src -v $(pwd)/reports:/out ghcr.io/sigstore/cosign sign /src/app/package.json --key /out/cosign.key
+
+      - name: "Upload reports"
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: reports/
