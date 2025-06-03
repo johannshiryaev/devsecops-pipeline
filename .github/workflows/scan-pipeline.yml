@@ -23,7 +23,7 @@ jobs:
 
     services:
       juice-shop:
-        image: juice-shop/juice-shop
+        image: ghcr.io/bkimminich/juice-shop:latest
         ports:
           - "3000:3000"
 
@@ -31,7 +31,7 @@ jobs:
       - name: "Checkout OWASP Juice Shop"
         uses: actions/checkout@v4
         with:
-          repository: bkimminich/juice-shop
+          repository: juice-shop/juice-shop
 
       - name: "Setup Node.js"
         uses: actions/setup-node@v4
