@@ -20,6 +20,7 @@ env:
 jobs:
   security-check:
     runs-on: ubuntu-latest
+    container: ubuntu
     services:
       juice-shop:
         image: bkimminich/juice-shop
