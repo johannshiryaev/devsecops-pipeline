@@ -36,6 +36,15 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v3
+
       - name: "Run Gitleaks scan"
         run: |
           docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --verbose
