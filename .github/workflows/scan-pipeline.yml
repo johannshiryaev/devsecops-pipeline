@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: "Install app dependencies"
         run: |
@@ -66,20 +66,14 @@ jobs:
             -Dsonar.organization=${{ env.SONAR_ORG }} \
             -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
             -Dsonar.sources=/src \
-            -Dsonar.host.url=https://sonarcloud.io  \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.host.url=https://sonarcloud.io 
 
       - name: "Dynamic analysis with OWASP ZAP"
         run: |
           docker run --rm -v $(pwd)/reports:/zap/reports owasp/zap2docker-stable zap-baseline.py -t http://juice-shop:3000 -r zap-report.html
 
-      - name: "Sign package.json with Cosign"
-        run: |
-          docker run --rm -v $(pwd)/reports:/out ghcr.io/sigstore/cosign generate-key-pair -y -o /out/cosign.key
-          docker run --rm -v $(pwd):/src -v $(pwd)/reports:/out ghcr.io/sigstore/cosign sign /src/app/package.json --key /out/cosign.key
-
       - name: "Upload reports"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: security-reports
           path: reports/
