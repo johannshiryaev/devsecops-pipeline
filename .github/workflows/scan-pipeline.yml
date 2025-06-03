@@ -31,7 +31,7 @@ jobs:
       - name: "Checkout OWASP Juice Shop"
         uses: actions/checkout@v4
         with:
-          repository: bkimminich/juice-shop
+          repository: owasp-juice-shop/juice-shop
           ref: main
 
       - name: "Setup Node.js"
