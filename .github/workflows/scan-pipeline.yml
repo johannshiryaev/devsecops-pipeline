@@ -23,7 +23,7 @@ jobs:
 
     services:
       juice-shop:
-        image: bkimminich/juice-shop
+        image: juice-shop/juice-shop
         ports:
           - "3000:3000"
 
