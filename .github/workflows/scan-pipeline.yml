@@ -21,11 +21,15 @@ jobs:
   security-check:
     runs-on: ubuntu-latest
     container: ubuntu
+
     services:
       juice-shop:
         image: bkimminich/juice-shop
         ports:
           - "3000:3000"
+      docker:
+        image: docker:dind
+        options: --privileged
 
     steps:
       - name: "Checkout repository"
@@ -36,12 +40,10 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Docker
+      - name: Set up Docker CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          docker --version
+          curl -fsSL https://get.docker.com | sh -s -- --dry-run
+          curl -fsSL https://get.docker.com | sh -s -- --skip-install-rootless
 
       - name: "Run Gitleaks scan"
         run: |
