@@ -42,8 +42,9 @@ jobs:
 
       - name: Set up Docker CLI
         run: |
-          curl -fsSL https://get.docker.com | sh -s -- --dry-run
-          curl -fsSL https://get.docker.com | sh -s -- --skip-install-rootless
+          apt-get update
+          apt-get install -y docker.io
+          systemctl start docker
 
       - name: "Run Gitleaks scan"
         run: |
