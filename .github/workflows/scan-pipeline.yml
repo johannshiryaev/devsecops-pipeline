@@ -33,7 +33,6 @@ jobs:
 
       - name: "Install app dependencies"
         run: |
-          cd app
           npm install --production
 
       - name: "Run Gitleaks scan"
