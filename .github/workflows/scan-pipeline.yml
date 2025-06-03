@@ -38,6 +38,7 @@ jobs:
 
       - name: "Install app dependencies"
         run: |
+          cd $GITHUB_WORKSPACE
           npm install --production
 
       - name: "Run Gitleaks scan"
