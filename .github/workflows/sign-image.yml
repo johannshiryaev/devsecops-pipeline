@@ -1,0 +1,40 @@
+name: Build and Sign Image with Cosign
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  IMAGE_NAME: ghcr.io/johannsh/juice-shop-security:latest
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "Login to GitHub Container Registry"
+        run: |
+          echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: "Build Docker image"
+        run: |
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+      - name: "Generate Cosign keys"
+        run: |
+          docker run --rm -v $(pwd)/reports:/out ghcr.io/sigstore/cosign \
+            generate-key-pair -y /out/cosign.key
+
+      - name: "Sign Docker image with Cosign"
+        run: |
+          docker run --rm -v $(pwd)/reports:/keys ghcr.io/sigstore/cosign \
+            sign --key /keys/cosign.key $IMAGE_NAME
+
+      - name: "Verify Docker image signature"
+        run: |
+          docker run --rm -v $(pwd)/reports:/keys ghcr.io/sigstore/cosign \
+            verify --key /keys/cosign.pub $IMAGE_NAME
