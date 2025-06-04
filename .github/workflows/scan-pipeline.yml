@@ -67,7 +67,7 @@ jobs:
           -v $(pwd):/app \
           ghcr.io/aquasecurity/trivy:latest \
           sbom /app/reports/sbom.json \
-          -f json -o /app/reports/trivy-sbom.json
+          fs --dependency-tree /app -f json -o /app/reports/trivy-sbom.json
 
       - name: "Run OWASP Dependency-Check"
         run: |
