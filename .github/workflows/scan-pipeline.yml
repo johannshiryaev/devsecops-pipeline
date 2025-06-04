@@ -14,7 +14,7 @@ on:
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  PROJECT_KEY: devsecops-pipeline
+  PROJECT_KEY: github.com/johannshiryaev/devsecops-pipeline
 
 jobs:
   security-check:
