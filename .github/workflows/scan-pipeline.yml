@@ -61,7 +61,7 @@ jobs:
 
       - name: "Scan SBOM with Trivy"
         run: |
-          docker run --rm -v $(pwd):/app aquasecurity/trivy \
+          docker run --rm -v $(pwd):/app ghcr.io/aquasecurity/trivy:latest \
           sbom /app/reports/sbom.json -o /app/reports/trivy-sbom.txt
 
       - name: "Run OWASP Dependency-Check"
