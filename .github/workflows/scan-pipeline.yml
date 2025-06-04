@@ -66,7 +66,7 @@ jobs:
           docker run --rm \
           -v $(pwd):/app \
           ghcr.io/aquasecurity/trivy:latest \
-          sbom --format cyclonedx /app/sbom.json
+          sbom /app/reports/sbom.json -o /app/reports/trivy-sbom.txt
 
       - name: "Run OWASP Dependency-Check"
         run: |
