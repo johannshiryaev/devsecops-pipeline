@@ -14,7 +14,7 @@ on:
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  PROJECT_KEY: devsecops-pipeline
+  PROJECT_KEY: johannshiryaev_devsecops-pipeline
 
 jobs:
   security-check:
@@ -87,4 +87,3 @@ jobs:
           name: security-reports
           path: reports/
 
-          
