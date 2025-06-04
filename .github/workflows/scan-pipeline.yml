@@ -58,7 +58,7 @@ jobs:
         run: |
           docker run --rm \
           -v $(pwd):/app \
-          anchore/syft:latest \
+          ghcr.io/aquasecurity/trivy:latest \
           fs --format cyclonedx --output /app/reports/sbom.json /app
 
       - name: "Scan SBOM with Trivy"
