@@ -56,11 +56,13 @@ jobs:
 
       - name: "Build SBOM with Syft"
         run: |
-          docker run --rm -v $(pwd):/app anchore/syft dir:/app -o cyclonedx-json=/app/reports/sbom.json
+          docker run --rm -v $(pwd):/app anchore/syft \
+          dir:/app -o cyclonedx-json=/app/reports/sbom.json
 
       - name: "Scan SBOM with Trivy"
         run: |
-          docker run --rm -v $(pwd):/app aquasecurity/trivy sbom /app/reports/sbom.json > /app/reports/trivy-sbom.txt
+          docker run --rm -v $(pwd):/app aquasecurity/trivy \
+          sbom /app/reports/sbom.json -o /app/reports/trivy-sbom.txt
 
       - name: "Run OWASP Dependency-Check"
         run: |
