@@ -57,7 +57,7 @@ jobs:
       - name: "Build SBOM with Syft"
         run: |
           docker run --rm -v $(pwd):/app anchore/syft \
-          dir:/app -o cyclonedx-json=/app/reports/sbom.json
+          syft node:/app -o cyclonedx-json=/app/reports/sbom.json
 
       - name: "Scan SBOM with Trivy"
         run: |
