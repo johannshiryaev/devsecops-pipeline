@@ -14,7 +14,7 @@ on:
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  PROJECT_KEY: juice-shop-devsecops
+  PROJECT_KEY: devsecops-pipeline
 
 jobs:
   security-check:
