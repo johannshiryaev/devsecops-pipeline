@@ -40,9 +40,13 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Create reports directory
+        run: mkdir -p reports
+
       - name: "Run Gitleaks scan"
         run: |
-          docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --exit-code=0
+          docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --report-format sarif \
+          --report-path /src/reports/gitleaks-report.sarif--exit-code=0
 
       - name: "Build SBOM with Syft"
         run: |
