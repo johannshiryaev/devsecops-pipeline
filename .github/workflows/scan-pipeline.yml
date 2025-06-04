@@ -75,8 +75,8 @@ jobs:
           -v $(pwd):/src \
           sonarsource/sonar-scanner-cli \
           -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
-          -Dsonar.login=${{ env.SONAR_TOKEN }}
-          -Dsonar.organization=${{ env.SONAR_ORG }}
+          -Dsonar.login=${{ env.SONAR_TOKEN }} \
+          -Dsonar.organization=${{ env.SONAR_ORG }} \
           -Dsonar.sources=/src \
           -Dsonar.host.url=https://sonarcloud.io    
 
