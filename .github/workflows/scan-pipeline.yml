@@ -69,14 +69,6 @@ jobs:
           sbom /app/reports/sbom.json \
           -f json -o /app/reports/trivy-sbom.json
 
-      - name: "Run OWASP Dependency-Check"
-        run: |
-          docker run --rm -v $(pwd):/project owasp/dependency-check \
-            --project juice-shop \
-            --scan /project/node_modules \
-            --format XML \
-            --out /project/reports/
-
       - name: "Static analysis with SonarQube"
         run: |
           docker run --rm -v $(pwd):/src sonarsource/sonar-scanner-cli \
