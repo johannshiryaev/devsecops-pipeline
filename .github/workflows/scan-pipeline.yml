@@ -46,7 +46,7 @@ jobs:
       - name: "Run Gitleaks scan"
         run: |
           docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --report-format sarif \
-          --report-path /src/reports/gitleaks-report.sarif--exit-code=0
+          --report-path /src/reports/gitleaks-report.sarif --exit-code=0
 
       - name: "Build SBOM with Syft"
         run: |
