@@ -101,7 +101,7 @@ jobs:
             -v $(pwd):/zap/wrk \
             -u root \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-            -t http://juice-shop:3000 \
+            -t http://localhost:3000 \
             -r zap-report.html
 
       - name: "Upload reports"
