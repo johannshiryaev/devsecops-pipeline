@@ -26,7 +26,6 @@ jobs:
         image: bkimminich/juice-shop
         ports:
           - "3000:3000"
-        options: --network host --privileged
 
     steps:
       - name: "Checkout OWASP Juice Shop"
