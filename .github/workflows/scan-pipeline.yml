@@ -94,7 +94,7 @@ jobs:
             --network host \
             -v $(pwd)/reports:/zap/reports \
             -u root \
-            ghcr.io/zaproxy/zaproxy:stable \
+            zaproxy/zap-stable \
             zap-baseline.py \
             -t http://localhost:3000 \
             -r /zap/reports/zap-report.html \
