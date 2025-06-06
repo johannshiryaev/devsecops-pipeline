@@ -85,7 +85,7 @@ jobs:
         run: |
           timeout=180
           while [ $timeout -gt 0 ]; do
-            if curl -s http://juice-shop:3000 > /dev/null; then
+            if curl -s http://localhost:3000 > /dev/null; then
               echo "Server is ready!"
               exit 0
             fi
