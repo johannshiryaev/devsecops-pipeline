@@ -26,6 +26,7 @@ jobs:
         image: bkimminich/juice-shop
         ports:
           - "3000:3000"
+        options: --network host --privileged
 
     steps:
       - name: "Checkout OWASP Juice Shop"
@@ -57,29 +58,29 @@ jobs:
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
-          -v $(pwd):/app \
-          ghcr.io/aquasecurity/trivy:latest \
-          fs --format cyclonedx --output /app/reports/sbom.json /app
+            -v $(pwd):/app \
+            ghcr.io/aquasecurity/trivy:latest \
+            fs --format cyclonedx --output /app/reports/sbom.json /app
 
       - name: "Scan SBOM with Trivy"
         run: |
           docker run --rm \
-          -v $(pwd):/app \
-          ghcr.io/aquasecurity/trivy:latest \
-          sbom /app/reports/sbom.json \
-          -f json -o /app/reports/trivy-sbom.json
+            -v $(pwd):/app \
+            ghcr.io/aquasecurity/trivy:latest \
+            sbom /app/reports/sbom.json \
+            -f json -o /app/reports/trivy-sbom.json
 
       - name: "Static analysis with SonarQube"
         run: |
           docker run --rm \
-          -v $(pwd):/src \
-          sonarsource/sonar-scanner-cli \
-          -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
-          -Dsonar.token=${{ env.SONAR_TOKEN }} \
-          -Dsonar.organization=${{ env.SONAR_ORG }} \
-          -Dsonar.sources=/src \
-          -Dsonar.projectBaseDir=/src \
-          -Dsonar.host.url=https://sonarcloud.io    
+            -v $(pwd):/src \
+            sonarsource/sonar-scanner-cli \
+            -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
+            -Dsonar.token=${{ env.SONAR_TOKEN }} \
+            -Dsonar.organization=${{ env.SONAR_ORG }} \
+            -Dsonar.sources=/src \
+            -Dsonar.projectBaseDir=/src \
+            -Dsonar.host.url=https://sonarcloud.io    
 
       - name: Wait for Juice Shop to respond
         run: |
@@ -98,10 +99,11 @@ jobs:
       - name: "Dynamic analysis with OWASP ZAP"
         run: |
           docker run --rm \
+            --network host \
             -v $(pwd):/zap/wrk \
             -u root \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-            -t http://host.docker.internal:3000 \
+            -t http://localhost:3000 \
             -r zap-report.html
 
       - name: "Upload reports"
