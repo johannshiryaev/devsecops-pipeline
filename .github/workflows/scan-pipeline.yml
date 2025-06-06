@@ -47,12 +47,6 @@ jobs:
         run: |
           docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --report-format sarif \
           --report-path /src/reports/gitleaks-report.sarif --exit-code=0
-
-      - name: Upload Gitleaks report
-        uses: actions/upload-artifact@v4
-        with:
-          name: gitleaks-report
-          path: reports/gitleaks-report.sarif
   
       - name: "Build SBOM with Trivy"
         run: |
@@ -68,12 +62,6 @@ jobs:
             ghcr.io/aquasecurity/trivy:latest \
             sbom /app/reports/sbom.json \
             -f json -o /app/reports/trivy-sbom.json
-
-      - name: Upload Trivy SARIF
-        uses: github/codeql-action@v2
-        with:
-          upload: true
-          sarif_file: reports/trivy-sbom.sarif
 
       - name: "Static analysis with SonarQube"
         run: |
@@ -91,22 +79,18 @@ jobs:
         run: |
           docker run --rm \
             --network host \
-            -v $(pwd):/zap/wrk \
+            -v $(pwd)/reports:/zap/reports \
             -u root \
-            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
             -t http://localhost:3000 \
             -r zap-report.html || true
 
-      - name: Convert ZAP XML to SARIF
-        run: |
-          pip install python3-zap
-          python3 -m zapcli convert reports/zap/zap-warnings.xml reports/zap/zap-report.sarif
-
-      - name: Upload SARIF to GitHub
-        uses: github/codeql-action@v2
+      - name: Upload ZAP report as artifact
+        uses: actions/upload-artifact@v4
         with:
-          upload: true
-          sarif_file: reports/zap-report.sarif    
+          name: zap-report
+          path: reports/zap-report.html  
 
       - name: "Upload reports"
         uses: actions/upload-artifact@v4
