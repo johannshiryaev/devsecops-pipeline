@@ -81,12 +81,28 @@ jobs:
           -Dsonar.projectBaseDir=/src \
           -Dsonar.host.url=https://sonarcloud.io    
 
+      - name: Wait for Juice Shop to respond
+        run: |
+          timeout=180
+          while [ $timeout -gt 0 ]; do
+            if curl -s http://juice-shop:3000 > /dev/null; then
+              echo "Server is ready!"
+              exit 0
+            fi
+            sleep 10
+            timeout=$((timeout - 10))
+          done
+          echo "Timeout waiting for server"
+          exit 1  
+
       - name: "Dynamic analysis with OWASP ZAP"
         run: |
           docker run --rm \
             -v $(pwd):/zap/wrk \
             -u root \
-            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://juice-shop:3000 -r zap-report.html
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://juice-shop:3000 \
+            -r zap-report.html
 
       - name: "Upload reports"
         uses: actions/upload-artifact@v4
