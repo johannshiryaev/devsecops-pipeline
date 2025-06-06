@@ -77,20 +77,23 @@ jobs:
 
       - name: "Dynamic analysis with OWASP ZAP"
         run: |
+          mkdir -p reports/zap
           docker run --rm \
             --network host \
-            -v $(pwd):/zap/wrk \
+            -v $(pwd)/reports:/zap/reports \
             -u root \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t http://localhost:3000 \
-            -r zap-report.html || true
+            -r /zap/reports/zap-report.html \
+            -w /zap/reports/zap-warnings.xml \
+            -j /zap/reports/zap-warnings.json || true
 
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: reports/zap-report.html  
+          path: reports/zap/ 
 
       - name: "Upload reports"
         uses: actions/upload-artifact@v4
