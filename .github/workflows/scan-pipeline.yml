@@ -54,6 +54,12 @@ jobs:
           name: gitleaks-report
           path: reports/gitleaks-report.sarif
 
+      - name: Upload Gitleaks SARIF
+        uses: github/codeql-action@v2
+        with:
+          upload: true
+          sarif_file: reports/gitleaks-report.sarif    
+
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
@@ -69,6 +75,12 @@ jobs:
             sbom /app/reports/sbom.json \
             -f json -o /app/reports/trivy-sbom.json
 
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action@v2
+        with:
+          upload: true
+          sarif_file: reports/trivy-sbom.sarif
+
       - name: "Static analysis with SonarQube"
         run: |
           docker run --rm \
@@ -81,20 +93,6 @@ jobs:
             -Dsonar.projectBaseDir=/src \
             -Dsonar.host.url=https://sonarcloud.io    
 
-      - name: Wait for Juice Shop to respond
-        run: |
-          timeout=180
-          while [ $timeout -gt 0 ]; do
-            if curl -s http://localhost:3000 > /dev/null; then
-              echo "Server is ready!"
-              exit 0
-            fi
-            sleep 10
-            timeout=$((timeout - 10))
-          done
-          echo "Timeout waiting for server"
-          exit 1  
-
       - name: "Dynamic analysis with OWASP ZAP"
         run: |
           docker run --rm \
@@ -104,6 +102,19 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://localhost:3000 \
             -r zap-report.html || true
+
+      - name: Convert ZAP XML to SARIF
+        uses: owasp-ltd/ghas-sarif@v1
+        with:
+          tool_name: "OWASP ZAP"
+          tool_output_file: "reports/zap-warnings.xml"
+          sarif_output_file: "reports/zap-report.sarif"
+
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action@v2
+        with:
+          upload: true
+          sarif_file: "reports/zap-report.sarif"      
 
       - name: "Upload reports"
         uses: actions/upload-artifact@v4
