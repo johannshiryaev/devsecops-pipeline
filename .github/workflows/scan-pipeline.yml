@@ -48,6 +48,12 @@ jobs:
           docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --report-format sarif \
           --report-path /src/reports/gitleaks-report.sarif --exit-code=0
   
+      - name: Upload Gitleaks SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: reports/
+
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
@@ -61,7 +67,13 @@ jobs:
             -v $(pwd):/app \
             ghcr.io/aquasecurity/trivy:latest \
             sbom /app/reports/sbom.json \
-            -f json -o /app/reports/trivy-sbom.json
+            -f sarif -o /app/reports/trivy-sbom.sarif
+
+      - name: Upload Trivy SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sbom
+          path: reports/
 
       - name: "Static analysis with SonarQube"
         run: |
