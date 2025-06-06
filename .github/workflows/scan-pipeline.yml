@@ -75,7 +75,7 @@ jobs:
           -v $(pwd):/src \
           sonarsource/sonar-scanner-cli \
           -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
-          -Dsonar.login=${{ env.SONAR_TOKEN }} \
+          -Dsonar.token=${{ env.SONAR_TOKEN }} \
           -Dsonar.organization=${{ env.SONAR_ORG }} \
           -Dsonar.sources=/src \
           -Dsonar.projectBaseDir=/src \
@@ -83,7 +83,9 @@ jobs:
 
       - name: "Dynamic analysis with OWASP ZAP"
         run: |
-          docker run --rm -v $(pwd)/reports:/zap/reports owasp/zap2docker-stable zap-baseline.py -t http://juice-shop:3000 -r zap-report.html
+          docker run --rm \
+          -v $(pwd)/reports:/zap/reports \
+          ghcr.io/owasp/zap2docker-stable zap-baseline.py -t http://juice-shop:3000 -r zap-report.html
 
       - name: "Upload reports"
         uses: actions/upload-artifact@v4
