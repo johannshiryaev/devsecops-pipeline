@@ -104,17 +104,15 @@ jobs:
             -r zap-report.html || true
 
       - name: Convert ZAP XML to SARIF
-        uses: owasp-ltd/ghas-sarif@v1
-        with:
-          tool_name: "OWASP ZAP"
-          tool_output_file: "reports/zap-warnings.xml"
-          sarif_output_file: "reports/zap-report.sarif"
+        run: |
+          pip install python3-zap
+          python3 -m zapcli convert reports/zap/zap-warnings.xml reports/zap/zap-report.sarif
 
       - name: Upload SARIF to GitHub
         uses: github/codeql-action@v2
         with:
           upload: true
-          sarif_file: "reports/zap-report.sarif"      
+          sarif_file: reports/zap-report.sarif    
 
       - name: "Upload reports"
         uses: actions/upload-artifact@v4
