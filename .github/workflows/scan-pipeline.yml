@@ -53,13 +53,7 @@ jobs:
         with:
           name: gitleaks-report
           path: reports/gitleaks-report.sarif
-
-      - name: Upload Gitleaks SARIF
-        uses: github/codeql-action@v2
-        with:
-          upload: true
-          sarif_file: reports/gitleaks-report.sarif    
-
+  
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
