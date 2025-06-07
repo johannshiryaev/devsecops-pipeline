@@ -58,7 +58,7 @@ jobs:
 
       - name: Check for dependency files
         run: |
-          find /src/frontend -type f -name "package.json"
+          find ./src/frontend -type f -name "package.json"
 
       - name: "Build SBOM with Trivy"
         run: |
