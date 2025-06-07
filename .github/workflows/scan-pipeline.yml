@@ -69,6 +69,7 @@ jobs:
             -v $(pwd):/app \
             ghcr.io/aquasecurity/trivy:latest \
             sbom /app/reports/sbom.json \
+            --scanners vuln \
             -f sarif -o /app/reports/trivy-sbom.sarif
 
       - name: Upload Trivy SARIF
