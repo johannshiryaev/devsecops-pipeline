@@ -45,8 +45,10 @@ jobs:
 
       - name: "Run Gitleaks scan"
         run: |
-          docker run --rm -v $(pwd):/src ghcr.io/gitleaks/gitleaks detect --source /src --no-git --report-format sarif \
-          --report-path /src/reports/gitleaks-report.sarif --exit-code=0
+          docker run --rm \
+            -v $(pwd):/src \
+            ghcr.io/gitleaks/gitleaks detect --source /src --no-git --report-format sarif \
+            --report-path /src/reports/gitleaks-report.sarif --exit-code=0
   
       - name: Upload Gitleaks SARIF
         uses: actions/upload-artifact@v4
@@ -92,14 +94,15 @@ jobs:
           mkdir -p reports/zap
           docker run --rm \
             --network host \
-            -v $(pwd)/reports:/zap/reports \
+            -v $(pwd)/reports:/zap/wrk \
             -u root \
             zaproxy/zap-stable \
             zap-baseline.py \
             -t http://localhost:3000 \
-            -r /zap/reports/zap-report.html \
-            -w /zap/reports/zap-warnings.xml \
-            -j /zap/reports/zap-warnings.json || true
+            -r /zap/wrk/zap-report.html \
+            -w /zap/wrk/zap-warnings.xml \
+            -J /zap/wrk/zap-warnings.json \
+            -I || true
 
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v4
