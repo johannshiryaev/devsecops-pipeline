@@ -59,18 +59,19 @@ jobs:
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
-            -v $(pwd):/app \
+            -v $(pwd):/src \
             ghcr.io/aquasecurity/trivy:latest \
-            fs --format cyclonedx --output /app/reports/sbom.json /app
+            fs /src \
+            --format cyclonedx \
+            --output /src/reports/sbom.json
 
       - name: "Scan SBOM with Trivy"
         run: |
           docker run --rm \
-            -v $(pwd):/app \
+            -v $(pwd):/src\
             ghcr.io/aquasecurity/trivy:latest \
-            sbom /app/reports/sbom.json \
-            --scanners vuln \
-            -f sarif -o /app/reports/trivy-sbom.sarif
+            sbom /src/reports/sbom.json \
+            -f sarif -o /src/reports/trivy-sbom.sarif
 
       - name: Upload Trivy SARIF
         uses: actions/upload-artifact@v4
