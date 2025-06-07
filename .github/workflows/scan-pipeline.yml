@@ -58,7 +58,7 @@ jobs:
 
       - name: Check for dependency files
         run: |
-          find /src/frontend -type f -name "package.json\|requirements.txt\|go.mod\|pom.xml"
+          find /src/frontend -type f -name "package.json"
 
       - name: "Build SBOM with Trivy"
         run: |
