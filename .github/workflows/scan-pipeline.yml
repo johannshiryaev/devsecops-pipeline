@@ -56,10 +56,6 @@ jobs:
           name: gitleaks-report
           path: reports/
 
-      - name: Check for dependency files
-        run: |
-          pwd ; ls -la ; find ./frontend -type f -name "package.json"
-
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
@@ -72,8 +68,9 @@ jobs:
       - name: "Scan SBOM with Trivy"
         run: |
           docker run --rm \
-            -v $(pwd):/src\
+            -v $(pwd):/src \
             ghcr.io/aquasecurity/trivy:latest \
+            ls -la ; cat ./reports/sbom.json \
             sbom /src/reports/sbom.json \
             -f sarif -o /src/reports/trivy-sbom.sarif
 
