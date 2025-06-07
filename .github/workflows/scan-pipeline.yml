@@ -99,9 +99,9 @@ jobs:
             zaproxy/zap-stable \
             zap-baseline.py \
             -t http://localhost:3000 \
-            -r /zap/wrk/zap-report.html \
-            -w /zap/wrk/zap-warnings.xml \
-            -J /zap/wrk/zap-warnings.json \
+            -r zap-report.html \
+            -w zap-warnings.xml \
+            -J zap-warnings.json \
             -I || true
 
       - name: Upload ZAP report as artifact
