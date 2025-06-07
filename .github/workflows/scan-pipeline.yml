@@ -56,6 +56,10 @@ jobs:
           name: gitleaks-report
           path: reports/
 
+      - name: Check for dependency files
+        run: |
+          find . -type f -name "package.json\|requirements.txt\|go.mod\|pom.xml"
+
       - name: "Build SBOM with Trivy"
         run: |
           docker run --rm \
