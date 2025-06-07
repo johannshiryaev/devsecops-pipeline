@@ -65,7 +65,7 @@ jobs:
           docker run --rm \
             -v $(pwd):/src \
             ghcr.io/aquasecurity/trivy:latest \
-            fs /src/frontend \
+            fs ./frontend \
             --format cyclonedx \
             --output /src/reports/sbom.json
 
