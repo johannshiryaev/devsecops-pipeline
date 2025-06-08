@@ -71,7 +71,7 @@ jobs:
             -v $(pwd):/src \
             ghcr.io/aquasecurity/trivy:latest \
             sbom src/reports/sbom.json \
-            --scanners vuln \
+            --scanners vuln,license \
             -f sarif \
             -o /src/reports/trivy-sbom.sarif
 
