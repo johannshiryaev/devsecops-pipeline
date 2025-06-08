@@ -82,7 +82,7 @@ jobs:
             ghcr.io/aquasecurity/trivy:latest \
             sbom src/reports/sbom.json \
             --scanners license \
-            --license-full \
+            --license-full bkimminich/juice-shop \
             --severity CRITICAL,HIGH
 
       - name: Upload Trivy SARIF
