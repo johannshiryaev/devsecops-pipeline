@@ -75,14 +75,14 @@ jobs:
             -f sarif \
             -o /src/reports/trivy-sbom.sarif
 
-      - name: "Scan SBOM with Trivy (license)"
+      - name: "Scan with Trivy (license)"
         run: |
           docker run --rm \
             -v $(pwd):/src \
             ghcr.io/aquasecurity/trivy:latest \
-            sbom src/reports/sbom.json \
+            image bkimminich/juice-shop \
             --scanners license \
-            --license-full bkimminich/juice-shop \
+            --license-full \
             --severity CRITICAL,HIGH
 
       - name: Upload Trivy SARIF
